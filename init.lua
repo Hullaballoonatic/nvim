@@ -39,6 +39,7 @@ P.S. You can delete this when you're done too. It's your config now :)
 -- Set <space> as the leader key
 -- See `:help mapleader`
 --  NOTE: Must happen before plugins are required (otherwise wrong leader will be used)
+vim.loader.enable()
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
@@ -129,9 +130,9 @@ require('lazy').setup({
     'lukas-reineke/indent-blankline.nvim',
     -- Enable `lukas-reineke/indent-blankline.nvim`
     -- See `:help indent_blankline.txt`
+    main = "ibl",
     opts = {
-      char = '┊',
-      show_trailing_blankline_indent = false,
+      indent = { char = '┊' },
     },
   },
 
@@ -230,6 +231,16 @@ vim.keymap.set({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
 vim.keymap.set('n', 'k', "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
 vim.keymap.set('n', 'j', "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
 
+-- Move lines up/down
+vim.keymap.set('n', '<A-Down>', ':m .+1<CR>==', { silent = true })
+vim.keymap.set('n', '<A-Up>', ':m .-2<CR>==', { silent = true })
+vim.keymap.set('v', '<A-Down>', ":m '>+1<CR>gv=gv", { silent = true })
+vim.keymap.set('v', '<A-Up>', ":m '<-2<CR>gv=gv", { silent = true })
+
+-- MacOS text navigation in insert mode
+vim.keymap.set('i', '<A-Left>', '<C-o>b', { silent = true })
+vim.keymap.set('i', '<A-Right>', '<C-o>w', { silent = true })
+
 -- [[ Highlight on yank ]]
 -- See `:help vim.highlight.on_yank()`
 local highlight_group = vim.api.nvim_create_augroup('YankHighlight', { clear = true })
@@ -283,8 +294,8 @@ require('nvim-treesitter.configs').setup {
 
   -- Autoinstall languages that are not installed. Defaults to false (but you can change for yourself!)
   auto_install = true,
-
   highlight = { enable = true },
+  ignore_install = {},
   indent = { enable = true, disable = { 'python' } },
   incremental_selection = {
     enable = true,
@@ -295,6 +306,8 @@ require('nvim-treesitter.configs').setup {
       node_decremental = '<M-space>',
     },
   },
+  modules = {},
+  sync_install = false,
   textobjects = {
     select = {
       enable = true,
@@ -435,7 +448,7 @@ mason_lspconfig.setup_handlers {
   end,
 }
 
--- nvim-cmp setup
+-- nvim-cmp setup (Completion)
 local cmp = require 'cmp'
 local luasnip = require 'luasnip'
 
